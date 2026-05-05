@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Creator {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  category  String
+  bio       String    @default("")
+  location  String    @default("")
+  rating    Float     @default(0)
+  verified  Boolean   @default(false)
+  imageUrl  String?
+  phone     String?
+  website   String?
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([category])
+  @@index([location])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  category    String
+  imageUrl    String?
+  available   Boolean  @default(true)
+  creator     Creator  @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  qrScans     QrScan[]
+  spaces      SpaceProduct[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([creatorId])
+}
+
+model Space {
+  id          String         @id @default(cuid())
+  name        String
+  type        String
+  address     String
+  city        String
+  description String         @default("")
+  contactName String?
+  contactEmail String?
+  products    SpaceProduct[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([city])
+  @@index([type])
+}
+
+model SpaceProduct {
+  id        String   @id @default(cuid())
+  space     Space    @relation(fields: [spaceId], references: [id])
+  spaceId   String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  startDate DateTime
+  endDate   DateTime?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([spaceId, productId])
+}
+
+model QrScan {
+  id        String   @id @default(cuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  location  String?
+  userAgent String?
+  scannedAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([scannedAt])
+}
