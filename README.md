@@ -269,6 +269,39 @@ conecta-creativo/
 
 ---
 
+## 🐳 Docker
+
+### Levantar todo con Docker Compose (producción-like)
+
+```bash
+docker compose up -d
+```
+
+Esto levanta:
+- **postgres** (PostgreSQL 16) en puerto 5432
+- **backend** (NestJS API) en puerto 3001 — ejecuta migraciones automáticamente al iniciar
+- **frontend** (Next.js) en puerto 3000
+
+### Solo base de datos (para desarrollo local)
+
+```bash
+docker compose -f docker-compose.dev.yml up -d
+```
+
+Esto solo levanta PostgreSQL, y puedes correr backend/frontend localmente con `pnpm dev`.
+
+### Comandos útiles
+
+```bash
+docker compose ps          # Ver estado de contenedores
+docker compose logs -f     # Ver logs en tiempo real
+docker compose down        # Detener todo
+docker compose down -v     # Detener y borrar volúmenes (reset DB)
+docker compose build       # Reconstruir imágenes
+```
+
+---
+
 ## 📄 Licencia
 
 Propietario — Conecta-Creativo © 2024

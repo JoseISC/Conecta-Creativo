@@ -45,12 +45,22 @@ cd apps/frontend && npx next dev --port 3000
 | Prisma migrate | `npx prisma migrate dev` | `apps/backend` |
 | Prisma generate | `npx prisma generate` | `apps/backend` |
 
+### Docker
+
+The project is fully Dockerized with `docker-compose.yml` at root:
+```bash
+docker compose up -d         # Full stack (postgres + backend + frontend)
+docker compose -f docker-compose.dev.yml up -d  # Only postgres (for local dev)
+```
+
 ### Non-obvious Caveats
 
-- PostgreSQL must be started manually: `pg_ctlcluster 16 main start` — it does not auto-start.
+- PostgreSQL must be started manually: `pg_ctlcluster 16 main start` — it does not auto-start. Alternatively use `docker compose -f docker-compose.dev.yml up -d`.
 - The database `conecta_creativo` must exist with user `postgres` / password `postgres`.
 - After modifying `prisma/schema.prisma`, run `npx prisma migrate dev` then `npx prisma generate`.
 - Backend `tsconfig.json` excludes `test/` dir — there's a separate `tsconfig.test.json` for test files used by ESLint.
 - The `pnpm.onlyBuiltDependencies` field in root `package.json` allows build scripts for Prisma and NestJS packages (no interactive `pnpm approve-builds` needed).
 - Frontend env var `NEXT_PUBLIC_API_URL` defaults to `http://localhost:3001/api`.
 - The Swagger API docs are available at `http://localhost:3001/api/docs` when the backend is running.
+- Prisma schema includes `binaryTargets = ["native", "linux-musl-openssl-3.0.x"]` to support both local dev and Alpine Docker containers.
+- The backend Dockerfile installs `openssl` (required by Prisma on Alpine) and uses a custom entrypoint that runs `prisma migrate deploy` before starting the server.

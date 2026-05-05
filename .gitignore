@@ -28,8 +28,7 @@ coverage/
 # Turbo
 .turbo/
 
-# Prisma
-apps/backend/prisma/migrations/
+# Prisma (migrations are tracked for production deployments)
 
 # Debug
 npm-debug.log*
